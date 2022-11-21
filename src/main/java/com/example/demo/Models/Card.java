@@ -1,0 +1,202 @@
+package com.example.demo.Models;
+
+
+import Utils.CardUtils;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+
+@Entity
+public class Card {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
+    private Long id;
+
+    private String cardHolder;
+
+    private CardType type;
+
+    private CardColor color;
+
+    private String number;
+
+    private String cvv;
+
+    private LocalDate thruDate;
+
+    private LocalDate fromDate;
+
+
+    /*//--------AUX--------
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Bank bank;
+    //---------AUX----------  */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+
+    public Card() {
+
+    }
+
+    public Card(String cardHolder, CardType type, CardColor color, String number, String cvv, LocalDate thruDate, LocalDate fromDate, Client client) {
+        this.cardHolder = cardHolder;
+        this.type = type;
+        this.color = color;
+        this.number = number;
+        this.cvv = cvv;
+        this.thruDate = thruDate;
+        this.fromDate = fromDate;
+        this.client = client;
+    }
+
+    public Card(CardType type, CardColor color, String number, String cvv, Client client) {
+        this.cardHolder = client.getLastName() + " " + client.getFirstName();
+        this.type = type;
+        this.color = color;
+        this.number = number;
+        this.cvv = cvv;
+        this.thruDate = LocalDate.now().plusYears(5);
+        this.fromDate = LocalDate.now();
+        this.client = client;
+    }
+
+    public Card(CardType type, CardColor color, Client client) {
+        this.cardHolder = client.getLastName() + " " + client.getFirstName();
+        this.type = type;
+        this.color = color;
+        this.number = CardUtils.generateNumbers(4) + "-" + CardUtils.generateNumbers(4) + "-" + CardUtils.generateNumbers(4) + "-" + CardUtils.generateNumbers(4);
+        this.cvv = generateCVV();
+        this.thruDate = LocalDate.now().plusYears(5);
+        this.fromDate = LocalDate.now();
+        this.client = client;
+    }
+
+   /* //-----AUX BANK-------
+    public Card(CardType type, CardColor color, String cvv, Client client, Bank bank) {
+        this.cardHolder = client.getLastName() + " " + client.getFirstName();
+        this.type = type;
+        this.color = color;
+        this.number = generateNumber(bank);
+        this.cvv = cvv;
+        this.thruDate = LocalDate.now().plusYears(bank.getCardGoodThru());
+        this.fromDate = LocalDate.now();
+        this.client = client;
+        this.bank = bank;
+      }
+    //-----AUX BANK-------
+*/
+
+    //generate para  bank
+   /* private String generateNumber(Bank bank) {
+        String newNumber = "";
+        for (int i = 0; i < 12; i++) {
+            int num = (int) (Math.random() * 10);
+            newNumber += String.valueOf(num);
+        }
+        return bank.getCardHeader() + newNumber;
+    }*/
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCardHolder() {
+        return cardHolder;
+    }
+
+    public void setCardHolder(String cardHolder) {
+        this.cardHolder = cardHolder;
+    }
+
+    public CardType getType() {
+        return type;
+    }
+
+    public void setType(CardType type) {
+        this.type = type;
+    }
+
+    public CardColor getColor() {
+        return color;
+    }
+
+    public void setColor(CardColor color) {
+        this.color = color;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public LocalDate getThruDate() {
+        return thruDate;
+    }
+
+    public void setThruDate(LocalDate thruDate) {
+        this.thruDate = thruDate;
+    }
+
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(LocalDate fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    private String generateCVV() { //metodo para generar el CVV automatico
+        int newCVV = (int) (Math.random() * (999 - 100)) + 100;
+        if (newCVV < 10) {
+            return "00" + (newCVV);
+        }
+        if (newCVV < 100) {
+            return "0" + (newCVV);
+        }
+        return String.valueOf(newCVV);
+
+
+    }
+}
+   /* //-----AUX-------
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+    //-----AUX-------
+
+*/
